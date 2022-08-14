@@ -27,56 +27,167 @@ Extra Credit
 */
 
 function LinkedList() {
-  let head = null;
+  let head = null,
+    node = null;
 
   function append(value) {
     if (!head) {
       head = Node(value);
     } else {
-      let node = head;
+      const tail = getTail();
+      tail.next = Node(value);
+    }
+  }
+
+  function prepend(value) {
+    if (!head) {
+      head = Node(value);
+    } else {
+      node = Node(value);
+      node.next = head;
+      head = node;
+    }
+  }
+
+  function size() {
+    if (!head) {
+      return 0;
+    } else {
+      let count = 1;
+      node = head;
+      while (node.next) {
+        node = node.next;
+        count++;
+      }
+      return count;
+    }
+  }
+
+  function getHead() {
+    return head;
+  }
+
+  function getTail() {
+    if (!head) {
+      return null;
+    } else {
+      node = head;
       while (node.next) {
         node = node.next;
       }
-      node.next = Node(value);
+      return node;
     }
   }
-  function prepend(value) {}
 
-  function size() {}
+  function at(index) {
+    if (index < 0 || size() - 1 < index) {
+      return null;
+    } else if (index === 0) {
+      return head;
+    } else {
+      node = head;
+      let count = 0;
+      while (count < index) {
+        node = node.next;
+        count++;
+      }
+      return node;
+    }
+  }
 
-  function tail() {}
+  function pop() {
+    if (!head) {
+      return null;
+    } else if (!head.next) {
+      node = { ...head };
+      head = null;
+      return node;
+    } else {
+      node = head;
+      let prev = null;
+      while (node.next) {
+        prev = node;
+        node = node.next;
+      }
+      prev.next = null;
+      return node;
+    }
+  }
 
-  function at(index) {}
+  function contains(value) {
+    return find(value) ? true : false;
+  }
 
-  function pop() {}
-
-  function contains(value) {}
-
-  function find(value) {}
+  function find(value) {
+    if (!head) {
+      return null;
+    } else if (head.value === value) {
+      return head;
+    } else {
+      node = head;
+      while (node.next) {
+        if (node.value === value) {
+          return node;
+        }
+        node = node.next;
+      }
+      return null;
+    }
+  }
 
   function toString() {
     if (!head) {
       return "empty list";
     } else {
-      let node = head;
-      let string = head.value.toString();
+      node = head;
+      let string = node.value.toString();
       while (node.next) {
         node = node.next;
-        string += node.value.toString();
+        string = string + " -> " + node.value.toString();
       }
       return string;
     }
   }
 
-  function insertAt(value, index) {}
+  function insertAt(value, index) {
+    const newNode = Node(value);
+    node = at(index - 1);
+    if (node) {
+      newNode.next = node.next;
+      node.next = newNode;
+    }
+    if (index === 0) {
+      newNode.next = head;
+      head = newNode;
+    }
+  }
 
-  function removeAt(index) {}
+  function removeAt(index) {
+    if (index < 0 || size() - 1 < index) {
+      return;
+    } else if (index === 0) {
+      head = head.next;
+      return;
+    } else {
+      node = head;
+      prev = null;
+      let count = 0;
+      while (count < index) {
+        prev = node;
+        node = node.next;
+        count++;
+      }
+      prev.next = node.next;
+      return;
+    }
+  }
 
   return {
     append,
     prepend,
     size,
-    tail,
+    getHead,
+    getTail,
     at,
     pop,
     contains,
@@ -95,8 +206,15 @@ function Node(value) {
 const myList = LinkedList();
 
 myList.append(5);
+myList.prepend(22);
 myList.append(3);
+myList.prepend(79);
 myList.append(8);
 myList.append(6);
 
+console.log(myList.toString());
+//console.log(myList.size());
+//console.log(myList.at(1));
+
+myList.insertAt("ins", 4);
 console.log(myList.toString());
