@@ -213,8 +213,3 @@ myList.append(8);
 myList.append(6);
 
 console.log(myList.toString());
-//console.log(myList.size());
-//console.log(myList.at(1));
-
-myList.insertAt("ins", 4);
-console.log(myList.toString());
