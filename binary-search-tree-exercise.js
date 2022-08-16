@@ -45,15 +45,14 @@ function Node(data) {
 }
 
 function Tree(array) {
-  const root = buildTree(array);
+  let root = buildTree(array);
 
   function print() {
     levelOrder(console.log);
   }
 
-  function levelOrder(fn) {
-    let stack = [root];
-    let node;
+  function levelOrder(fn, node = root) {
+    let stack = [node];
     while (stack.length) {
       node = stack.shift();
       if (node.left) {
@@ -66,7 +65,102 @@ function Tree(array) {
     }
     return;
   }
-  return { root, print };
+
+  function inOrder(fn = null, node = root) {
+    return _depthFirstTraversal("in", fn, node);
+  }
+  function preOrder(fn = null, node = root) {
+    return _depthFirstTraversal("pre", fn, node);
+  }
+  function postOrder(fn = null, node = root) {
+    return _depthFirstTraversal("post", fn, node);
+  }
+  function _depthFirstTraversal(type, fn, node) {
+    const array = [];
+    const _fn = fn ? fn : (node) => array.push(node.data);
+    if (type === "in") _inOrder(node);
+    if (type === "pre") _preOrder(node);
+    if (type === "post") _postOrder(node);
+
+    if (array.length) {
+      return array;
+    } else {
+      return null;
+    }
+
+    function _inOrder(node) {
+      if (node) {
+        _inOrder(node.left);
+        _fn(node);
+        _inOrder(node.right);
+      } else {
+        return;
+      }
+    }
+
+    function _preOrder(node) {
+      if (node) {
+        _fn(node);
+        _preOrder(node.left);
+        _preOrder(node.right);
+      } else {
+        return;
+      }
+    }
+
+    function _postOrder(node) {
+      if (node) {
+        _postOrder(node.left);
+        _postOrder(node.right);
+        _fn(node);
+      } else {
+        return;
+      }
+    }
+  }
+
+  function rebalance() {
+    const array = [];
+    levelOrder((val) => array.push(val));
+    root = buildTree(array);
+  }
+
+  function insertNode(value) {}
+
+  function deleteNode(value) {}
+
+  function find(value) {
+    let node = root;
+    let parent = null;
+    while (node.data !== value) {
+      if (value < node.data && node.left) {
+        parent = node;
+        node = node.left;
+      } else if (node.data < value && node.right) {
+        parent = node;
+        node = node.right;
+      } else {
+        return { node: null, parent };
+      }
+    }
+    return { node, parent };
+  }
+
+  function height(node) {}
+
+  function depth(node) {}
+
+  return {
+    root,
+    print,
+    insertNode,
+    deleteNode,
+    find,
+    rebalance,
+    inOrder,
+    preOrder,
+    postOrder,
+  };
 }
 
 function buildTree(array) {
@@ -78,7 +172,6 @@ function buildTree(array) {
       return arr;
     }, [])
     .sort((a, b) => a - b); //filter duplicates & sort array
-  console.log(array);
   return _build(array);
 
   function _build(array) {
@@ -92,7 +185,6 @@ function buildTree(array) {
       const node = Node(array[mid]);
       const left = array.slice(0, mid);
       const right = array.slice(mid + 1);
-      console.log({ left, right });
       node.left = _build(left);
       node.right = _build(right);
       return node;
@@ -100,8 +192,12 @@ function buildTree(array) {
   }
 }
 
-//const myArray = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324];
+console.log("########");
 const myArray = [1, 6, 4, 9, 5];
 const myTree = Tree(myArray);
 
-myTree.print();
+//myTree.print();
+//console.log(myTree.find(5));
+//console.log(myTree.inOrder());
+//console.log(myTree.preOrder());
+//console.log(myTree.postOrder());
