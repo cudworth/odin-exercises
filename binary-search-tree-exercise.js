@@ -48,10 +48,20 @@ function Tree(array) {
   let root = buildTree(array);
 
   function print() {
-    levelOrder(console.log);
+    console.log("### PRINT TREE ###");
+    levelOrder(_print);
+    console.log("##################");
+    function _print(node) {
+      const left = node.left ? node.left.data.toString() + " <- " : "";
+      const right = node.right ? " -> " + node.right.data.toString() : "";
+      console.log(left + "(" + node.data.toString() + ")" + right);
+    }
   }
 
   function levelOrder(fn, node = root) {
+    if (!root) {
+      return;
+    }
     let stack = [node];
     while (stack.length) {
       node = stack.shift();
@@ -61,7 +71,7 @@ function Tree(array) {
       if (node.right) {
         stack.push(node.right);
       }
-      fn(node.data);
+      fn(node);
     }
     return;
   }
@@ -125,19 +135,19 @@ function Tree(array) {
     root = buildTree(array);
   }
 
-  function insertNode(value) {}
-
-  function deleteNode(value) {}
-
   function find(value) {
     let node = root;
     let parent = null;
+
+    if (!root) {
+      return { node, parent };
+    }
+
     while (node.data !== value) {
+      parent = node;
       if (value < node.data && node.left) {
-        parent = node;
         node = node.left;
       } else if (node.data < value && node.right) {
-        parent = node;
         node = node.right;
       } else {
         return { node: null, parent };
@@ -150,8 +160,74 @@ function Tree(array) {
 
   function depth(node) {}
 
+  function isBalanced() {}
+
+  function insertNode(value) {
+    if (!root) {
+      root = Node(value);
+      return;
+    } else {
+      const { node, parent } = find(value);
+      if (!node) {
+        const new_node = Node(value);
+        if (new_node.data < parent.data) {
+          parent.left = new_node;
+        } else {
+          parent.right = new_node;
+        }
+      }
+    }
+  }
+
+  function deleteNode(value) {
+    if (!root) {
+      return;
+    } else {
+      const { node, parent } = find(value);
+      if (node) {
+        // no children of node
+        if (!node.left && !node.right) {
+          if (!parent) {
+            root = null;
+            return;
+          }
+          if (parent.left === node) {
+            parent.left = null;
+          }
+          if (parent.right === node) {
+            parent.right = null;
+          }
+        }
+
+        // single child of node
+        if ((!node.left && node.right) || (node.left && !node.right)) {
+          if (!parent) {
+            root = node.left ? node.left : node.right;
+            return;
+          }
+          if (parent.left === node) {
+            parent.left = node.left ? node.left : node.right;
+          }
+          if (parent.right === node) {
+            parent.right = node.left ? node.left : node.right;
+          }
+        }
+
+        // two children of node
+        if (node.left && node.right) {
+          let nearest = node.right;
+          while (nearest.left) {
+            nearest = nearest.left;
+          }
+          const temp_data = nearest.data;
+          deleteNode(temp_data);
+          node.data = temp_data;
+        }
+      }
+    }
+  }
+
   return {
-    root,
     print,
     insertNode,
     deleteNode,
@@ -160,6 +236,9 @@ function Tree(array) {
     inOrder,
     preOrder,
     postOrder,
+    height,
+    depth,
+    isBalanced,
   };
 }
 
@@ -201,3 +280,8 @@ const myTree = Tree(myArray);
 //console.log(myTree.inOrder());
 //console.log(myTree.preOrder());
 //console.log(myTree.postOrder());
+myTree.print();
+myTree.deleteNode(5);
+myTree.print();
+//myTree.deleteNode(4);
+//myTree.print();
