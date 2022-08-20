@@ -131,29 +131,46 @@ function Tree(array) {
 
   function rebalance() {
     const array = [];
-    levelOrder((val) => array.push(val));
+    levelOrder((node) => array.push(node.data));
     root = buildTree(array);
+  }
+
+  function findNode(value) {
+    const query = _find(value);
+    return query.node;
   }
 
   function find(value) {
     let node = root;
     let parent = null;
+    let depth = null;
 
     if (!root) {
-      return { node, parent };
+      return buildObj();
     }
-
+    depth = 0;
     while (node.data !== value) {
       parent = node;
+      depth++;
       if (value < node.data && node.left) {
         node = node.left;
       } else if (node.data < value && node.right) {
         node = node.right;
       } else {
-        return { node: null, parent };
+        node = null;
+        depth = null;
+        return buildObj();
       }
     }
-    return { node, parent };
+    return buildObj();
+
+    function buildObj() {
+      return {
+        node,
+        parent,
+        depth,
+      };
+    }
   }
 
   function height(node) {
@@ -175,22 +192,12 @@ function Tree(array) {
   }
 
   function depth(node) {
-    /*   Write a depth function which accepts a node and returns its depth. Depth is defined as the number of edges in path from a given node to the tree’s root node.*/
-    let node_depth = null;
-    _depth(root, 0);
-    function _depth(current, depth) {
-      if (!current) {
-        return;
-      }
-      if (current === node) {
-        node_depth = depth;
-        return;
-      } else {
-        _depth(current.left, depth + 1);
-        _depth(current.right, depth + 1);
-      }
+    if (!node) {
+      return null;
+    } else {
+      const query = find(node.data);
+      return query.depth;
     }
-    return node_depth;
   }
 
   function isBalanced() {
@@ -209,7 +216,6 @@ function Tree(array) {
         const right = _checkBalance(node.right);
         const diff = left - right;
         if (1 < diff || diff < -1) {
-          console.log({ node: node.data, left, right });
           isTrue = false;
         }
         return 1 + left + right;
@@ -330,16 +336,18 @@ function buildTree(array) {
 console.log("######################################");
 const myArray = [1, 6, 4, 9, 5];
 const myTree = Tree(myArray);
-console.log(myTree.isBalanced());
 
 //myTree.print();
 //console.log(myTree.find(5));
 //console.log(myTree.inOrder());
 //console.log(myTree.preOrder());
 //console.log(myTree.postOrder());
+myTree.insertNode(88);
+myTree.insertNode(89);
+myTree.insertNode(101);
+console.log(myTree.isBalanced());
 myTree.print();
-myTree.deleteNode(1);
+myTree.rebalance();
 myTree.print();
-//console.log(myTree.isBalanced());
-const { node, parent } = myTree.find();
-console.log(myTree.depth(node));
+console.log(myTree.isBalanced());
+myTree.print();
