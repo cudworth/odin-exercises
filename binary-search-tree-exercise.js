@@ -156,11 +156,67 @@ function Tree(array) {
     return { node, parent };
   }
 
-  function height(node) {}
+  function height(node) {
+    if (!node) {
+      return null;
+    }
+    let max_height = 0;
+    _height(node);
+    function _height(node, height = 0) {
+      if (!node) {
+        return;
+      } else {
+        max_height = max_height < height ? height : max_height;
+        _height(node.left, height + 1);
+        _height(node.right, height + 1);
+      }
+    }
+    return max_height;
+  }
 
-  function depth(node) {}
+  function depth(node) {
+    /*   Write a depth function which accepts a node and returns its depth. Depth is defined as the number of edges in path from a given node to the tree’s root node.*/
+    let node_depth = null;
+    _depth(root, 0);
+    function _depth(current, depth) {
+      if (!current) {
+        return;
+      }
+      if (current === node) {
+        node_depth = depth;
+        return;
+      } else {
+        _depth(current.left, depth + 1);
+        _depth(current.right, depth + 1);
+      }
+    }
+    return node_depth;
+  }
 
-  function isBalanced() {}
+  function isBalanced() {
+    if (!root) {
+      return true;
+    }
+
+    let isTrue = true;
+    _checkBalance(root);
+
+    function _checkBalance(node) {
+      if (!node) {
+        return 0;
+      } else {
+        const left = _checkBalance(node.left);
+        const right = _checkBalance(node.right);
+        const diff = left - right;
+        if (1 < diff || diff < -1) {
+          console.log({ node: node.data, left, right });
+          isTrue = false;
+        }
+        return 1 + left + right;
+      }
+    }
+    return isTrue;
+  }
 
   function insertNode(value) {
     if (!root) {
@@ -271,9 +327,10 @@ function buildTree(array) {
   }
 }
 
-console.log("########");
+console.log("######################################");
 const myArray = [1, 6, 4, 9, 5];
 const myTree = Tree(myArray);
+console.log(myTree.isBalanced());
 
 //myTree.print();
 //console.log(myTree.find(5));
@@ -281,7 +338,8 @@ const myTree = Tree(myArray);
 //console.log(myTree.preOrder());
 //console.log(myTree.postOrder());
 myTree.print();
-myTree.deleteNode(5);
+myTree.deleteNode(1);
 myTree.print();
-//myTree.deleteNode(4);
-//myTree.print();
+//console.log(myTree.isBalanced());
+const { node, parent } = myTree.find();
+console.log(myTree.depth(node));
